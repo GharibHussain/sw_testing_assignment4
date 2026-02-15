@@ -21,7 +21,7 @@ describe('dogService.getRandomDogImage', () => {
     test('Positive Test: return a result containing imageUrl and status', async () => {
 
         const fakeFetchResponse = createMockResponse()
-        // mockech fetch
+        // mocked fetch
         const mockedFetch = vi.spyOn(global, 'fetch').mockResolvedValue(fakeFetchResponse)
 
         const result = await getRandomDogImage()
@@ -39,7 +39,7 @@ describe('dogService.getRandomDogImage', () => {
             "ok": false, 
             "status": 500 
         }
-        
+
         // mocked fetch
         vi.spyOn(global, 'fetch').mockResolvedValue(mockFetchResponseError)
         

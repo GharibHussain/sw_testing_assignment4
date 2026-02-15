@@ -23,11 +23,11 @@ describe('dogController.getDogImage', () => {
         // fake response
         const res = createMockResponse()
 
-        // mocked getRandomDogImage
+        // mock getRandomDogImage 
         vi.spyOn(dogService, 'getRandomDogImage').mockResolvedValue(mockedJson)
 
         await getDogImage(req, res)
-
+        
         expect(res.json).toHaveBeenCalledWith({
             success: true,
             data: mockedJson
