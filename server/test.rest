@@ -12,3 +12,6 @@ GET {{baseUrl}}/api/dogs/random
 ### Get Random Dog Image (Alternative format)
 GET {{baseUrl}}/api/dogs/random
 Content-Type: {{contentType}}
+
+###
+GET https://dog.ceo/api/breeds/image/random
