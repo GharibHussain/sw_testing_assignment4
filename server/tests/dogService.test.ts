@@ -8,16 +8,6 @@ const mockedJson = {
             "status": "success"
         };
 
-// create a mock response for fetch
-const createMockResponse = () => {
-    const res = {} as any
-    res.ok = true
-    res.json = vi.fn().mockResolvedValue(mockedJson)
-    return res
-}
-
-
-
 describe('dogService.getRandomDogImage', () => {
     beforeEach(() => { 
         global.fetch = vi.fn() 
