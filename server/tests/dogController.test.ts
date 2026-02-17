@@ -2,6 +2,10 @@ import { describe, expect, test, vi} from "vitest";
 import { getDogImage } from "../controllers/dogController";  
 import * as dogService from "../services/dogService"
 
+// mock dogService module
+vi.mock('../services/dogService')
+
+
 // mock response for getDogImage function
 const mockedJson = {
             "imageUrl": "https://images.dog.ceo/breeds/bulldog-french/n02108915_5669.jpg",
@@ -23,8 +27,8 @@ describe('dogController.getDogImage', () => {
         // fake response
         const res = createMockResponse()
 
-        // mock getRandomDogImage 
-        vi.spyOn(dogService, 'getRandomDogImage').mockResolvedValue(mockedJson)
+        // mock implementation for getRandomDogImage 
+        vi.mocked(dogService.getRandomDogImage).mockResolvedValue(mockedJson)
 
         await getDogImage(req, res)
         
