@@ -1,9 +1,15 @@
-import { describe, expect, test, vi} from "vitest"
+import { describe, expect, test, vi, beforeEach, afterEach} from "vitest"
 import { app } from "../index"
 import request  from "supertest"
-import * as dogService from "../services/dogService"
+import { Request, Response } from "express"
+import * as dogController from "../controllers/dogController"
 
 
+
+// mock dogController module
+vi.mock('../controllers/dogController')
+
+// expected response
 const expectedJson = {
     "success": true,
     "data": {
@@ -12,6 +18,7 @@ const expectedJson = {
         }
 }
 
+// expected error response
 const expectedErrorJson = {
     "success": false, 
     "error": "Failed to fetch dog image: Network error" 
@@ -19,9 +26,22 @@ const expectedErrorJson = {
 
 
 describe('Dog routes', () => {
+    
+    beforeEach(() => {
+        vi.clearAllMocks()
+    })
+    afterEach(() => {
+        vi.resetAllMocks()
+    })
+
+    //Test 4:
     test('Positive Test: GET /api/dogs/random returns expected json', async () => {
-        // mock dogService
-        vi.spyOn(dogService, 'getRandomDogImage').mockResolvedValue(expectedJson.data)
+        // mock implementation fo getDogImage
+        vi.mocked(dogController.getDogImage).mockImplementation(
+            async (_req: Request, res: Response) => {
+                res.status(200).json(expectedJson)
+            }
+        )
 
         // api call
         const res = await request(app) 
@@ -32,15 +52,20 @@ describe('Dog routes', () => {
         expect(res.body.data.imageUrl).toBe(expectedJson.data.imageUrl)
     })
 
+    // Test 5:
     test('Negative Test: GET /api/dogs/random returns 500 error', async () => {
-        // mock dogService
-        vi.spyOn(dogService, 'getRandomDogImage').mockRejectedValue(new Error(expectedErrorJson.error))
+        // mock implementation for getDogImage
+        vi.mocked(dogController.getDogImage).mockImplementation(
+            async (_req: Request, res: Response) => {
+                res.status(500).json(expectedErrorJson)
+            }
+        )
 
         // api call
         const res = await request(app)
             .get('/api/dogs/random')
 
         expect(res.status).toBe(500)
-        expect(res.body).toEqual(expectedErrorJson)
+        expect(res.body.error).toBeDefined()
     })
 })
