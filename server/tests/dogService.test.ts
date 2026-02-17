@@ -1,5 +1,6 @@
-import { describe, expect, test, vi} from "vitest";
+import { afterEach, beforeEach, describe, expect, test, vi} from "vitest";
 import { getRandomDogImage } from "../services/dogService";
+
 
 // mock response json
 const mockedJson = {
@@ -16,13 +17,26 @@ const createMockResponse = () => {
 }
 
 
-// Test 1
+
 describe('dogService.getRandomDogImage', () => {
+    beforeEach(() => { 
+        global.fetch = vi.fn() 
+    }) 
+    afterEach(() => { 
+        vi.clearAllMocks() 
+        vi.resetAllMocks() 
+    })
+
+    // Test 1
     test('Positive Test: return a result containing imageUrl and status', async () => {
 
-        const fakeFetchResponse = createMockResponse()
+        const fakeFetchResponse = {
+            ok: true,
+            json: async () => (mockedJson)
+        }
+
         // mocked fetch
-        const mockedFetch = vi.spyOn(global, 'fetch').mockResolvedValue(fakeFetchResponse)
+        const mockedFetch = vi.mocked(fetch).mockResolvedValue(fakeFetchResponse as Response)
 
         const result = await getRandomDogImage()
         
@@ -32,18 +46,21 @@ describe('dogService.getRandomDogImage', () => {
         expect(mockedFetch).toHaveBeenCalledOnce()
     })
 
+    // Test 2
     test('Negative Test: error is thrown when fetch reponse is not ok', async () => {
 
         // mock response for fetch with error
-        const mockFetchResponseError = {
-            "ok": false, 
-            "status": 500 
+        const fakeFetchResponseError = {
+            ok: false, 
+            status: 500 
         }
 
         // mocked fetch
-        vi.spyOn(global, 'fetch').mockResolvedValue(mockFetchResponseError)
+        vi.mocked(fetch).mockResolvedValue(fakeFetchResponseError as Response)
         
-        expect(getRandomDogImage()).rejects.toThrowError(`Dog API returned status ${mockFetchResponseError.status}`)
+        await expect(getRandomDogImage()).rejects.toThrow(
+            `Dog API returned status ${fakeFetchResponseError.status}`
+        )
         
     })
 })
